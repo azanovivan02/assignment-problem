@@ -7,6 +7,7 @@ import com.netcracker.algorithms.auction.auxillary.entities.basic.SearchTaskResu
 
 import java.util.concurrent.CyclicBarrier;
 
+import static com.netcracker.algorithms.auction.auxillary.entities.basic.Person.NO_PERSON;
 import static com.netcracker.algorithms.auction.auxillary.utils.BidUtils.findBestItem;
 import static com.netcracker.utils.ConcurrentUtils.await;
 import static com.netcracker.utils.io.logging.StaticLoggerHolder.info;
@@ -60,6 +61,8 @@ class ActingThread implements Runnable {
                 break;
             }
 
+            info("[%d] Selected person %s", threadId, person);
+
             SearchTaskResult result = findBestItem(
                     person,
                     itemList,
@@ -69,10 +72,25 @@ class ActingThread implements Runnable {
 
             final double bidValue = result.getBidValue(epsilon);
             final Item bestItem = result.getBestItem();
+
+            Person previousPerson;
             synchronized (bestItem) {
                 priceVector.increasePrice(bestItem, bidValue);
+                previousPerson = assignment.getPersonForItem(bestItem);
                 assignment.setPersonForItem(bestItem, person);
             }
+
+            if (previousPerson != NO_PERSON) {
+                synchronized (personQueue) {
+                    personQueue.add(previousPerson);
+                }
+            }
+
+            info("[%d] Selected item %s as the best for person %s", threadId, bestItem, person);
+            if (previousPerson != NO_PERSON) {
+                info("[%d] Previous owner %s of item %s is put back into queue", threadId, bestItem, person);
+            }
+            info("[%d] Increased price for item %s by %.2f", threadId, bestItem, bidValue);
         }
 
         info("[%d] Thread finished e-scaling phase", threadId);

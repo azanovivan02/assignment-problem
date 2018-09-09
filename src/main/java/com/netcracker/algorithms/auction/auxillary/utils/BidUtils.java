@@ -28,6 +28,10 @@ public class BidUtils {
                 currentSecondBestValue = value;
             }
         }
-        return new SearchTaskResult(currentBestItem, currentBestValue, currentSecondBestValue);
+        return new SearchTaskResult(
+                currentBestItem,
+                currentBestValue,
+                currentSecondBestValue
+        );
     }
 }
