@@ -3,11 +3,13 @@ package com.netcracker.algorithms.auction.auxillary.entities.tasks;
 import com.netcracker.algorithms.auction.auxillary.entities.aggregates.BenefitMatrix;
 import com.netcracker.algorithms.auction.auxillary.entities.aggregates.ItemList;
 import com.netcracker.algorithms.auction.auxillary.entities.aggregates.PriceVector;
-import com.netcracker.algorithms.auction.auxillary.entities.basic.Item;
 import com.netcracker.algorithms.auction.auxillary.entities.basic.Person;
 import com.netcracker.algorithms.auction.auxillary.entities.basic.SearchTaskResult;
+import com.netcracker.algorithms.auction.auxillary.utils.BidUtils;
 
 import java.util.concurrent.Callable;
+
+import static com.netcracker.algorithms.auction.auxillary.utils.BidUtils.findBestItem;
 
 public class SearchTask implements Callable<SearchTaskResult> {
 
@@ -26,6 +28,11 @@ public class SearchTask implements Callable<SearchTaskResult> {
         this.itemList = itemList;
     }
 
+    @Override
+    public SearchTaskResult call() {
+        return findBestItem(person, itemList, priceVector, benefitMatrix);
+    }
+
     public BenefitMatrix getBenefitMatrix() {
         return benefitMatrix;
     }
@@ -40,26 +47,6 @@ public class SearchTask implements Callable<SearchTaskResult> {
 
     public ItemList getItemList() {
         return itemList;
-    }
-
-    @Override
-    public SearchTaskResult call() {
-        Item currentBestItem = null;
-        double currentBestValue = -1.0;
-        double currentSecondBestValue = -1.0;
-        for (Item item : itemList) {
-            int benefit = benefitMatrix.getBenefit(person, item);
-            double price = priceVector.getPriceFor(item);
-            double value = benefit - price;
-            if (value > currentBestValue) {
-                currentBestItem = item;
-                currentBestValue = value;
-                currentSecondBestValue = currentBestValue;
-            } else if (value > currentSecondBestValue) {
-                currentSecondBestValue = value;
-            }
-        }
-        return new SearchTaskResult(currentBestItem, currentBestValue, currentSecondBestValue);
     }
 
     @Override

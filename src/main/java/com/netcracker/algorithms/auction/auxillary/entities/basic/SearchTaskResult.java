@@ -26,6 +26,10 @@ public class SearchTaskResult {
         return secondBestValue;
     }
 
+    public double getBidValue(double epsilon) {
+        return bestValue - secondBestValue + epsilon;
+    }
+
     @Override
     public String toString() {
         return "SearchTaskResult{" +

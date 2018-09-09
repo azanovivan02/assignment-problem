@@ -24,7 +24,7 @@ public class DefaultRunner {
         // Available assignment problem solvers
         Map<String, AssignmentProblemSolver> solverMap = createSolverMap();
 
-        // Find assignment for each cost matrix using each solver
+        // Find assignm+ent for each cost matrix using each solver
         Map<int[][], Map<String, List<Integer>>> allAssignments = findAssignmentForEveryMatrix(matrixList, solverMap);
 
         // Output

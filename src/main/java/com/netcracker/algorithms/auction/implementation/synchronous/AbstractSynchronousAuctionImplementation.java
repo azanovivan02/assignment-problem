@@ -4,12 +4,12 @@ import com.netcracker.algorithms.auction.auxillary.entities.aggregates.*;
 import com.netcracker.algorithms.auction.auxillary.entities.basic.Bid;
 import com.netcracker.algorithms.auction.auxillary.entities.basic.Item;
 import com.netcracker.algorithms.auction.implementation.AuctionImplementation;
+import com.netcracker.utils.ConcurrentUtils;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static com.netcracker.algorithms.auction.auxillary.logic.bids.BidAggregator.aggregateBids;
 import static com.netcracker.algorithms.auction.auxillary.logic.bids.BidProcessor.processBidsAndUpdateAssignmentForItemList;
@@ -57,7 +57,7 @@ public abstract class AbstractSynchronousAuctionImplementation implements Auctio
         final ItemList itemList = ItemList.createFullItemList(n);
         final Assignment assignment = Assignment.createInitialAssignment(n);
 
-        final ExecutorService executorService = createExecutorService(numberOfThreads);
+        final ExecutorService executorService = ConcurrentUtils.createExecutorService(numberOfThreads);
         while (!nonAssignedPersonQueue.isEmpty()) {
             auctionRound(
                     benefitMatrix,
@@ -116,9 +116,11 @@ public abstract class AbstractSynchronousAuctionImplementation implements Auctio
         );
     }
 
-    public abstract List<Bid> makeBids(BenefitMatrix benefitMatrix, PriceVector priceVector, double epsilon, PersonQueue nonAssignedPersonQueue, ItemList itemList, ExecutorService executorService);
+    public abstract List<Bid> makeBids(BenefitMatrix benefitMatrix,
+                                       PriceVector priceVector,
+                                       double epsilon,
+                                       PersonQueue nonAssignedPersonQueue,
+                                       ItemList itemList,
+                                       ExecutorService executorService);
 
-    private static ExecutorService createExecutorService(int numberOfThreads) {
-        return Executors.newFixedThreadPool(numberOfThreads);
-    }
 }

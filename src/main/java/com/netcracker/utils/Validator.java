@@ -13,6 +13,11 @@ public class Validator {
     }
 
     public static boolean assignmentsAreSame(Map<String, List<Integer>> assignmentMap) {
-        return assignmentMap.values().stream().distinct().limit(2).count() <= 1;
+        return assignmentMap
+                .values()
+                .stream()
+                .distinct()
+                .limit(2)
+                .count() <= 1;
     }
 }
